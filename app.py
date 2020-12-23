@@ -19,14 +19,21 @@ async def predict(request):
         form = await request.form()
         inputQuery = form["message"]
         start = time.time()
-        sentence = Sentence(inputQuery)
-        classifier.predict(sentence)
-        label = sentence.labels[0]
-        result = str(label.value)
-        context = {
-            "Sentiment": result,
-            "time (seconds)": str(round(time.time() - start, 3)),
-        }
+		try:
+			sentence = Sentence(inputQuery)
+			classifier.predict(sentence)
+			label = sentence.labels[0]
+			result = str(label.value)
+			context = {
+				"Sentiment": result,
+				"time (seconds)": str(round(time.time() - start, 3)),
+			}
+		except:
+			print("Invalied Input:Please enter the valied input")
+			context = {
+				"Error":"Invalied Input:Please enter the valied input",
+				"time (seconds)": str(round(time.time() - start, 3)),
+			}
         return JSONResponse(context)
     else:
         return templates.TemplateResponse("home.html", {"request": request, "data": ""})
